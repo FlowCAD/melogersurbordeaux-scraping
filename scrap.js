@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 const districts = [
   {
@@ -6,42 +7,42 @@ const districts = [
     code: 'nansouty',
     name: 'Nansouty',
     ma_code: 'nansouty',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_nansouty-170491825/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_nansouty-170491825/'
   },
   {
     id: 3,
     code: 'la_bastide',
     name: 'La Bastide',
     ma_code: 'la_bastide',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_la-bastide-170489513/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_la-bastide-170489513/'
   },
   {
     id: 4,
     code: 'saint_augustin',
     name: 'Saint Augustin',
     ma_code: 'saint_augustin',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_saint-augustin-170493985/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_saint-augustin-170493985/'
   },
   {
     id: 5,
     code: 'villa_primerose_parc_bordelais',
     name: 'Villa Primerose / Parc Bordelais',
     ma_code: 'villa_primerose_parc_bordelais_cauderan',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_villa-primerose-parc-bordelais-cauderan-170494226/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_villa-primerose-parc-bordelais-cauderan-170494226/'
   },
   {
     id: 6,
     code: 'saint_bruno_saint_victor',
     name: 'Saint-Bruno / Saint-Victor',
     ma_code: 'saint_bruno_saint_victor',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_saint-bruno-saint-victor-170491987/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_saint-bruno-saint-victor-170491987/'
   },
   {
     id: 7,
     code: 'saint_seurin_fondaudege',
     name: 'Saint Seurin / Fondaudège',
     ma_code: 'saint_seurin_fondaudege',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_saint-seurin-fondaudege-170492384/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_saint-seurin-fondaudege-170492384/'
 
   },
   {
@@ -49,14 +50,14 @@ const districts = [
     code: 'chartrons',
     name: 'Chartrons',
     ma_code: 'chartrons_grand_parc',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_chartrons-grand-parc-170493895/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_chartrons-grand-parc-170493895/'
   },
   {
     id: 9,
     code: 'hotel_de_ville_quinconces',
     name: 'Hotel de Ville / Quinconces',
     ma_code: 'hotel_de_ville_quinconces',
-    url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_hotel-de-ville-quinconces-170491639/'
+    ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_hotel-de-ville-quinconces-170491639/'
   }
 ];
 
@@ -76,7 +77,7 @@ const getData = async (browser, district) => {
     const myArr = clearText.split(' ');
     return {prix_moy: myArr[3], prix_max: myArr[7], prix_min: myArr[5] }
   })
-  return {...result, 'district': district.name}
+  return {...district, ...result}
 }
 
 const scrap = async () => {
@@ -85,9 +86,23 @@ const scrap = async () => {
   const results = await Promise.all(districts.map(district => getData(browser, district)))
 
   await browser.close()
-  return results
+  return results;
 }
 
 scrap()
-  .then(res => console.log(res))
+  .then(res => {
+    const dateString = new Date().toLocaleDateString();
+    fs.writeFile(
+      `output/output_${dateString}.json`,
+      JSON.stringify(res, null, 2),
+      'utf8',
+      (err) => {
+        if (err) {
+          console.err("An error occured while writing JSON Object to File.", err);
+        } else {
+          console.log("JSON file has been saved.");
+        }
+      }
+    )
+  })
   .catch(err => console.error(err));
