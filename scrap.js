@@ -63,29 +63,33 @@ const districts = [
 
 
 const getData = async (browser, district) => {
-  const page = await browser.newPage()
-  await page.goto(district.ma_url)
-  await page.setViewport({ width: 2000, height: 1000 })
-  await page.waitForTimeout(5000)
-  await page.waitForSelector('body')
+  const page = await browser.newPage();
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3419.0 Safari/537.36');
+  await page.goto(district.ma_url, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector('body');
+  await page.waitForTimeout(3000);
 
   const result = await page.evaluate(() => {
     const selector = "#prices-summary-sell > div.prices-summary__prices--container > div.prices-summary__apartment-prices > ul";
-    const pricesSummary = document.querySelector(selector).innerText
+    const pricesSummary = document.querySelector(selector).innerText;
     // removing the thousand space separator, the " €" and replacing the line break by a simple splace
     const clearText = pricesSummary.replace(/\u202f/g, '').replace(/\u00a0€/g, '').replace(/\n/g, ' ')
     const myArr = clearText.split(' ');
     return {prix_moy: myArr[3], prix_max: myArr[7], prix_min: myArr[5] }
-  })
-  return {...district, ...result}
+  });
+  return {...district, ...result};
 }
 
 const scrap = async () => {
-  const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: [`--window-size=1920,1080`],
+    defaultViewport: { width:1920, height:1080 }
+  });
 
-  const results = await Promise.all(districts.map(district => getData(browser, district)))
+  const results = await Promise.all(districts.map(district => getData(browser, district)));
 
-  await browser.close()
+  await browser.close();
   return results;
 }
 
@@ -98,7 +102,7 @@ const exportResult = async (result) => {
     await fs.writeFile(fileName, fileContent, 'utf8');
     console.log("JSON file has been saved.");
   } catch (err) {
-    console.error("An error occured while writing JSON Object to File.", err)
+    console.error("An error occured while writing JSON Object to File.", err);
   }
 }
 
