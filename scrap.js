@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+const fs = require('fs').promises;
 
 const districts = [
   {
@@ -64,7 +64,7 @@ const districts = [
 
 const getData = async (browser, district) => {
   const page = await browser.newPage()
-  await page.goto(district.url)
+  await page.goto(district.ma_url)
   await page.setViewport({ width: 2000, height: 1000 })
   await page.waitForTimeout(5000)
   await page.waitForSelector('body')
@@ -89,20 +89,19 @@ const scrap = async () => {
   return results;
 }
 
+const exportResult = async (result) => {
+  const dateString = new Date().toLocaleDateString();
+  const fileName = `output/output_${dateString}.json`;
+  const fileContent = JSON.stringify(result, null, 2);
+
+  try {
+    await fs.writeFile(fileName, fileContent, 'utf8');
+    console.log("JSON file has been saved.");
+  } catch (err) {
+    console.error("An error occured while writing JSON Object to File.", err)
+  }
+}
+
 scrap()
-  .then(res => {
-    const dateString = new Date().toLocaleDateString();
-    fs.writeFile(
-      `output/output_${dateString}.json`,
-      JSON.stringify(res, null, 2),
-      'utf8',
-      (err) => {
-        if (err) {
-          console.err("An error occured while writing JSON Object to File.", err);
-        } else {
-          console.log("JSON file has been saved.");
-        }
-      }
-    )
-  })
+  .then(res => exportResult(res))
   .catch(err => console.error(err));
