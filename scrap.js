@@ -75,9 +75,18 @@ const getData = async (browser, district) => {
     // removing the thousand space separator, the " €" and replacing the line break by a simple splace
     const clearText = pricesSummary.replace(/\u202f/g, '').replace(/\u00a0€/g, '').replace(/\n/g, ' ')
     const myArr = clearText.split(' ');
-    return {prix_moy: myArr[3], prix_max: myArr[7], prix_min: myArr[5] }
+
+    // date key construction
+    const now = new Date();
+    let mm = now.getMonth() + 1;
+    if (mm < 10)
+      mm = `0${mm}`;
+
+    const dateKey = `${now.getFullYear()}${mm}`;
+
+    return { [dateKey]: { prix_moy: myArr[3], prix_max: myArr[7], prix_min: myArr[5] }}
   });
-  return {...district, ...result};
+  return { ...district, prices: { ...result } };
 }
 
 const scrap = async () => {
@@ -100,7 +109,7 @@ const exportResult = async (result) => {
 
   try {
     await fs.writeFile(fileName, fileContent, 'utf8');
-    console.log("JSON file has been saved.");
+    console.log(`JSON file has been saved here: ./${fileName}`);
   } catch (err) {
     console.error("An error occured while writing JSON Object to File.", err);
   }
