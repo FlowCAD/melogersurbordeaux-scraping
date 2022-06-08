@@ -25,8 +25,8 @@ const districts = [
   },
   {
     id: 5,
-    code: 'villa_primerose_parc_bordelais',
-    name: 'Villa Primerose / Parc Bordelais',
+    code: 'villa_primerose_parc_bordelais_cauderan',
+    name: 'Villa Primerose / Parc Bordelais / Cauderan',
     ma_code: 'villa_primerose_parc_bordelais_cauderan',
     ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_villa-primerose-parc-bordelais-cauderan-170494226/'
   },
