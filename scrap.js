@@ -84,7 +84,10 @@ const getData = async (browser, district) => {
 
     const dateKey = `${now.getFullYear()}${mm}`;
 
-    return { [dateKey]: { prix_moy: myArr[3], prix_max: myArr[7], prix_min: myArr[5] }}
+    const prix_moy = parseInt(myArr[3]);
+    const prix_max = parseInt(myArr[7]);
+    const prix_min = parseInt(myArr[5]);
+    return { [dateKey]: { prix_moy, prix_max, prix_min }}
   });
   return { ...district, prices: { ...result } };
 }
