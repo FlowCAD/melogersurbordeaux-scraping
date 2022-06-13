@@ -47,7 +47,7 @@ const districts = [
   },
   {
     id: 8,
-    code: 'chartrons',
+    code: 'chartrons_grand_parc',
     name: 'Chartrons',
     ma_code: 'chartrons_grand_parc',
     ma_url: 'https://www.meilleursagents.com/prix-immobilier/bordeaux-33000/quartier_chartrons-grand-parc-170493895/'
