@@ -106,7 +106,13 @@ const scrap = async () => {
 }
 
 const exportResult = async (result) => {
-  const dateString = new Date().toLocaleDateString();
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  let mm = now.getMonth() + 1, dd = now.getDate();
+  if (dd < 10) dd = `0${dd}`;
+  if (mm < 10) mm = `0${mm}`;
+  const dateString = `${yyyy}-${mm}-${dd}`;
+
   const fileName = `output/output_${dateString}.json`;
   const fileContent = JSON.stringify(result, null, 2);
 
