@@ -94,7 +94,7 @@ const getData = async (browser, district) => {
 
 const scrap = async () => {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [`--window-size=1920,1080`],
     defaultViewport: { width:1920, height:1080 }
   });
